@@ -1,0 +1,47 @@
+{% extends 'module/hotregion/grid_base.html' %}
+
+{% block datasource %}
+    <script src="/static/leaflet/us_states.js"></script>
+{% endblock %}
+
+{% block maplocation %}
+    var map = L.map('mapip').setView([37.8, -96], 4);
+{% endblock %}
+
+{% block getColor %}
+    <script>
+        function getColor(d) {
+            return d > 1000 ? '#800026' :
+                d > 500  ? '#BD0026' :
+                d > 200  ? '#E31A1C' :
+                d > 100  ? '#FC4E2A' :
+                d > 50   ? '#FD8D3C' :
+                d > 20   ? '#FEB24C' :
+                d > 10   ? '#FED976' :
+                           '#FFEDA0';
+        }
+        function style(feature) {
+            return {
+                fillColor: getColor(feature.properties.density),
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                dashArray: '3',
+                fillOpacity: 0.7
+            };
+        }
+
+        L.geoJson(statesData, {style: style}).addTo(map);
+
+    </script>
+{% endblock %}
+
+
+{% block InfoNote %}
+    this._div.innerHTML = '<h4>US Population Density</h4>' +  (props ?
+        '<b>' + props.name + '</b><br />' + props.density + ' people / mi<sup>2</sup>'
+        : 'Hover over a state');
+{% endblock %}
+
+{% block Legends %}
+{% endblock %}

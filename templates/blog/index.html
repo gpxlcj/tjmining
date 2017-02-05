@@ -1,0 +1,39 @@
+{% extends 'module/blog/base.html' %}
+
+{% block header %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="page-heading">
+                    <h1>{{ page_title }}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            {% for name in blog_list %}
+                <div class="post-preview">
+                    <a href="{% url 'blog_view' name.blog_id %}">
+                        <h2 class="post-title">
+                            {{ name.title }}
+                        </h2>
+                        {% if name.subtitle %}
+                        <h3 class="post-subtitle">
+                            {{ name.subtitle }}
+                        </h3>
+                        {% endif %}
+                    </a>
+                    <p class="post-meta">Posted by <em>{{ name.author }}</em> {{ name.create_time }}</p>
+                </div>
+                <hr>
+            {% empty %}
+                <h2> No blog exist!</h2>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

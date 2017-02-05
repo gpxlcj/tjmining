@@ -1,0 +1,76 @@
+{% extends 'module/hotregion/grid_base.html' %}
+
+{% block datasource %}
+    <script src="/static/data_hot/{{ data_file }}"></script>
+{% endblock %}
+
+{% block maplocation %}
+    var map = L.map('mapip').setView([20.9, 120], 6);
+{% endblock %}
+
+{% block getColor %}
+    <script>
+
+        function getColor(d) {
+            {% if level_list|length > 6 %}
+            return d > {{ level_list.0 }} ? '#800026' :
+                d > {{ level_list.1 }}  ? '#BD0026' :
+                d > {{ level_list.2 }}  ? '#E31A1C' :
+                d > {{ level_list.3 }}  ? '#FC4E2A' :
+                d > {{ level_list.4 }}   ? '#FD8D3C' :
+                d > {{ level_list.5 }}   ? '#FEB24C' :
+                d > {{ level_list.6 }}   ? '#FED976' :
+                           '#FFEDA0';
+            {% else %}
+            return d > {{ 3000 }} ? '#800026' :
+                d > {{ 2500 }}  ? '#BD0026' :
+                d > {{ 2000 }}  ? '#E31A1C' :
+                d > {{ 1500 }}  ? '#FC4E2A' :
+                d > {{ 1000 }}   ? '#FD8D3C' :
+                d > {{ 500 }}   ? '#FEB24C' :
+                d > {{ 300 }}   ? '#FED976' :
+                           '#FFEDA0';
+            {% endif %}
+        }
+        function style(feature) {
+            return {
+                fillColor: getColor(feature.properties.density),
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                dashArray: '3',
+                fillOpacity: 0.7
+            };
+        }
+        L.geoJson(statesData, {style: style}).addTo(map);
+
+    </script>
+{% endblock %}
+
+{% block InfoNote %}
+    this._div.innerHTML = '<h4>Grid GPS Point Number</h4>' +  (props ?
+        '<b>' + props.name + '</b><br />' + props.density + ' points'
+        : 'Hover over a grid');
+{% endblock %}
+
+{% block Legends %}
+    <script>
+        var legend = L.control({position: 'bottomright'});
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'info legend'),
+            grades = {{ level_list_reverse|safe }},
+            labels = [];
+            grades.splice(0, 0, 0);
+
+            // loop through our density intervals and generate a label with a colored square for each interval
+            for (var i = 0; i < grades.length; i++) {
+                div.innerHTML +=
+                    '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+                    grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+            }
+            return div;
+        };
+
+        legend.addTo(map);
+    </script>
+{% endblock %}
